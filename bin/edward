@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# Do this ASAP to catch Crtl+c and exit cleanly
+trap('INT') do
+  abort("\nEdward is aborting...")
+end
+
 require 'edward'
 
-Edward::Main.new
+Edward::Application.new
