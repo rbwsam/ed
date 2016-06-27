@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module Edward
   class Dsl
     def initialize(tasks, environments)
@@ -26,7 +28,20 @@ module Edward
       @templates[name] = block
     end
 
-    def render(name)
+    def remote_template(name, remote_path, sudo = false)
+      tmp_file = Tempfile.new('remote_template')
+      File.write(tmp_file.path, compile_template(name))
+      if sudo
+        remote_tmp_file_path = "/tmp/#{File.basename(tmp_file.path)}"
+        sync(tmp_file.path, remote_tmp_file_path)
+        remote("sudo mv #{remote_tmp_file_path} #{remote_path}")
+      else
+        sync(tmp_file.path, remote_path)
+      end
+      tmp_file.unlink
+    end
+
+    def compile_template(name)
       @templates[name].call
     end
 
