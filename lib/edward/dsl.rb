@@ -1,11 +1,13 @@
 module Edward
-	class Dsl
+  class Dsl
     include Edward::Logging
-		 
-		def initialize(tasks, environments)
-			@tasks = @environments = {}
 
-			[tasks, environments].each { |thing| instance_eval(thing) }
+    def initialize(tasks, environments)
+      @tasks = {}
+      @environments = {}
+      @templates = {}
+
+      [environments, tasks].each { |thing| instance_eval(thing) }
     end
 
     def run
@@ -15,12 +17,20 @@ module Edward
 
     private
 
-		def task(name, &block)
-    	@tasks[name] = block
+    def task(name, &block)
+      @tasks[name] = block
     end
 
     def environment(name, &block)
       @environments[name] = block
+    end
+
+    def template(name, &block)
+      @templates[name] = block
+    end
+
+    def render(name)
+      @templates[name].call
     end
 
     def local(cmd)
@@ -35,5 +45,5 @@ module Edward
       raise '`remote` is not implemented yet!'
     end
 
-	end
+  end
 end

@@ -18,16 +18,18 @@ module Edward
     def check_args
       if ARGV.length != 2
         puts_color "Usage: #{APP_NAME} <environment> <task>"
+        exit(false)
       end
     end
 
     def check_files
+      fail = false
       unless File.exist?(tasks_file)
-        puts_color "Missing required file: #{tasks_file}"
+        puts_color "Missing tasks file: #{tasks_file}"
         fail = true
       end
       unless File.exist?(environments_file)
-        puts_color "Missing required file: #{environments_file}"
+        puts_color "Missing environments file: #{environments_file}"
         fail = true
       end
       exit(false) if fail
