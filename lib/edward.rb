@@ -1,4 +1,5 @@
-require 'edward/logging'
+require 'edward/log'
+require 'edward/system'
 require 'edward/application'
 require 'edward/dsl'
 

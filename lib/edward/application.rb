@@ -1,35 +1,28 @@
 module Edward
   class Application
-    include Edward::Logging
-
     def initialize
       check_args
       check_files
-      run
+
+      Dsl.new(File.read(tasks_file), File.read(environments_file))
     end
 
     private
 
-    def run
-      dsl = Dsl.new(File.read(tasks_file), File.read(environments_file))
-      dsl.run
-    end
-
     def check_args
       if ARGV.length != 2
-        puts_color "Usage: #{APP_NAME} <environment> <task>"
-        exit(false)
+        Edward::System.abort "Usage: #{APP_NAME} <environment> <task>"
       end
     end
 
     def check_files
       fail = false
       unless File.exist?(tasks_file)
-        puts_color "Missing tasks file: #{tasks_file}"
+        Edward::Log.log "Missing tasks file: #{tasks_file}"
         fail = true
       end
       unless File.exist?(environments_file)
-        puts_color "Missing environments file: #{environments_file}"
+        Edward::Log.log "Missing environments file: #{environments_file}"
         fail = true
       end
       exit(false) if fail

@@ -1,21 +1,18 @@
 module Edward
   class Dsl
-    include Edward::Logging
-
     def initialize(tasks, environments)
+      @hosts = []
+      @ssh_opts = ''
+
       @tasks = {}
       @environments = {}
       @templates = {}
 
       [environments, tasks].each { |thing| instance_eval(thing) }
-    end
 
-    def run
-      @environments[ARGV[0].to_sym].call
-      @tasks[ARGV[1].to_sym].call
+      load_environment(ARGV[0])
+      execute_task(ARGV[1])
     end
-
-    private
 
     def task(name, &block)
       @tasks[name] = block
@@ -34,15 +31,51 @@ module Edward
     end
 
     def local(cmd)
-      system cmd
-      if $? != 0 # Check command exit status
-        log "Local command failed: #{cmd}"
-        exit(false)
-      end
+      run(cmd, 'Local command failed')
     end
 
     def remote(cmd)
-      raise '`remote` is not implemented yet!'
+      @hosts.each do |host|
+        run("ssh #{@ssh_opts} #{host} \"#{cmd}\"", 'Remote command failed')
+      end
+    end
+
+    def sync(local_path, remote_path, opts = '')
+      @hosts.each do |host|
+        cmd = "rsync #{opts} -e \"ssh #{@ssh_opts}\" #{local_path} #{host}:#{remote_path}"
+        run(cmd, 'Sync failed')
+      end
+    end
+
+    def log(message)
+      puts "\e[33m#{message}\e[0m"
+    end
+
+    private
+
+    def load_environment(name)
+      name = name.to_sym
+      if @environments[name].nil?
+        Edward::System.abort "Unknown environment '#{name}'"
+      else
+        @environments[name].call
+      end
+    end
+
+    def execute_task(name)
+      name = name.to_sym
+      if @tasks[name].nil?
+        Edward::System.abort "Unknown task '#{name}'"
+      else
+        @tasks[name].call
+      end
+    end
+
+    def run(cmd, failure_message = 'Command failed')
+      system cmd
+      if $? != 0 # Check command exit status
+        Edward::System.abort "#{failure_message} '#{cmd}'"
+      end
     end
 
   end
