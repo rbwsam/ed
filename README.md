@@ -6,6 +6,12 @@ Simple task automation tool with zero dependencies.
 
     $ gem install fuggle
 
+## Usage
+
+Define your `Fugglefile` and `Fugglefile.env` (see below) and run the `fuggle` command:
+
+    $ fuggle <environemnt> <task>
+
 ## Fugglefile
 
 Create a blank file named `Fugglefile` in the root of your project.
