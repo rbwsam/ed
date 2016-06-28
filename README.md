@@ -29,6 +29,7 @@ Methods are convenient ways to run commands and copy files.
 
 ```ruby
 task :example do
+  log 'log something to STDOUT'
   local 'command to run on local host'
   remote 'command to run on remote hosts'
   sync 'local source path' 'destination path on remote hosts' '[optional] options for rsync like -r --dell'
