@@ -1,30 +1,38 @@
-# Edward
+# Fuggle
 
 TODO: Write a gem description
 
 ## Installation
 
-Add this line to your application's Gemfile:
+    $ gem install fuggle
+
+## Fugglefile
+
+Create a `Fugglefile` in the root of your project.
+
+### Tasks
+
+Tasks are defined in `task` blocks:
 
 ```ruby
-gem 'edward'
+task :deploy do
+  # Do deployment stuff here
+end
 ```
 
-And then execute:
+### Methods
 
-    $ bundle
+Methods are convenient ways to run commands and copy files.
 
-Or install it yourself as:
-
-    $ gem install edward
-
-## Usage
+```ruby
+  local("command to run locally")
+```
 
 TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/edward/fork )
+1. Fork it ( https://github.com/rbwsam/fuggle/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

@@ -1,4 +1,4 @@
-module Edward
+module Fuggle
   class Log
     class << self
 

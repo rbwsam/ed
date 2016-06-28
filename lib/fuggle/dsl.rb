@@ -1,6 +1,6 @@
 require 'tempfile'
 
-module Edward
+module Fuggle
   class Dsl
     def initialize(tasks, environments)
       @hosts = []
@@ -71,7 +71,7 @@ module Edward
     def load_environment(name)
       name = name.to_sym
       if @environments[name].nil?
-        Edward::System.abort "Unknown environment '#{name}'"
+        Fuggle::System.abort "Unknown environment '#{name}'"
       else
         @environments[name].call
       end
@@ -80,7 +80,7 @@ module Edward
     def execute_task(name)
       name = name.to_sym
       if @tasks[name].nil?
-        Edward::System.abort "Unknown task '#{name}'"
+        Fuggle::System.abort "Unknown task '#{name}'"
       else
         @tasks[name].call
       end
@@ -89,7 +89,7 @@ module Edward
     def run(cmd, failure_message = 'Command failed')
       system cmd
       if $? != 0 # Check command exit status
-        Edward::System.abort "#{failure_message} '#{cmd}'"
+        Fuggle::System.abort "#{failure_message} '#{cmd}'"
       end
     end
 

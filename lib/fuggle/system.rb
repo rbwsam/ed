@@ -1,9 +1,9 @@
-module Edward
+module Fuggle
   class System
     class << self
 
       def abort(message)
-        Edward::Log.log(message)
+        Fuggle::Log.log(message)
         exit(false)
       end
 
