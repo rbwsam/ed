@@ -28,15 +28,15 @@ module Fuggle
       @templates[name] = block
     end
 
-    def remote_template(name, remote_path, sudo = false)
+    def remote_template(hosts, name, remote_path, sudo = false)
       tmp_file = Tempfile.new('remote_template')
       File.write(tmp_file.path, compile_template(name))
       if sudo
         remote_tmp_file_path = "/tmp/#{File.basename(tmp_file.path)}"
-        sync(tmp_file.path, remote_tmp_file_path)
-        remote("sudo mv #{remote_tmp_file_path} #{remote_path}")
+        sync(hosts, tmp_file.path, remote_tmp_file_path)
+        remote(hosts, "sudo mv #{remote_tmp_file_path} #{remote_path}")
       else
-        sync(tmp_file.path, remote_path)
+        sync(hosts, tmp_file.path, remote_path)
       end
       tmp_file.unlink
     end
@@ -49,14 +49,14 @@ module Fuggle
       run(cmd, 'Local command failed')
     end
 
-    def remote(cmd)
-      @hosts.each do |host|
+    def remote(hosts, cmd)
+      hosts.map { |host|
         run("ssh #{@ssh_opts} #{host} \"#{cmd}\"", 'Remote command failed')
-      end
+      }
     end
 
-    def sync(local_path, remote_path, opts = '')
-      @hosts.each do |host|
+    def sync(hosts, local_path, remote_path, opts = '')
+      hosts.each do |host|
         cmd = "rsync #{opts} -e \"ssh #{@ssh_opts}\" #{local_path} #{host}:#{remote_path}"
         run(cmd, 'Sync failed')
       end
@@ -64,6 +64,15 @@ module Fuggle
 
     def log(message)
       puts "\e[33m#{message}\e[0m"
+    end
+
+    def exists?(host, path)
+      begin
+        run("ssh #{@ssh_opts} #{host} \"test -e #{path}\"")
+        true
+      rescue Fuggle::Exception::Abort
+        false
+      end
     end
 
     private
@@ -87,10 +96,11 @@ module Fuggle
     end
 
     def run(cmd, failure_message = 'Command failed')
-      system cmd
+      res = `#{cmd}`
       if $? != 0 # Check command exit status
-        Fuggle::System.abort "#{failure_message} '#{cmd}'"
+        raise Fuggle::Exception::Abort.new("#{failure_message} '#{cmd}'")
       end
+      res
     end
 
   end

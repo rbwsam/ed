@@ -4,7 +4,11 @@ module Fuggle
       check_args
       check_files
 
-      Dsl.new(File.read(tasks_file), File.read(environments_file))
+      begin
+        Dsl.new(File.read(tasks_file), File.read(environments_file))
+      rescue Fuggle::Exception::Abort => e
+        Fuggle::System.abort(e.message)
+      end
     end
 
     private
