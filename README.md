@@ -38,8 +38,8 @@ task :example do
   log 'message to be written to STDOUT'
   local 'command to run on local host'
   remote 'command to run on remote hosts'
-  sync 'local source path' 'destination path on remote hosts' '[optional] options for rsync like -r --dell'
-  remote_template 'name of template' 'destination path on remote hosts' '[optional] use sudo? defaul=false'
+  sync 'local source path' 'destination path on remote hosts' '[optional] options for rsync like -r --del'
+  remote_template 'name of template' 'destination path on remote hosts' '[optional] use sudo? default=false'
 end
 ```
 
